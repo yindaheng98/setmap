@@ -53,12 +53,12 @@ func (m IfaceSetMap[K, V]) Exists(key IfaceSetMapItem[K], value IfaceSetMapItem[
 }
 
 // GetSet get all the values from the set whose ID is key
-func (m IfaceSetMap[K, V]) GetSet(key IfaceSetMapItem[K]) []V {
-	var r []V
+func (m IfaceSetMap[K, V]) GetSet(key IfaceSetMapItem[K]) []IfaceSetMapItem[V] {
+	var r []IfaceSetMapItem[V]
 	if set, ok := m.m[key.ID()]; ok {
-		r = make([]V, len(set))
+		r = make([]IfaceSetMapItem[V], len(set))
 		i := 0
-		for value := range set {
+		for _, value := range set {
 			r[i] = value
 			i++
 		}
@@ -108,17 +108,17 @@ func (m IfaceSetMapaMteS[K, V]) RemoveKey(key IfaceSetMapItem[K]) {
 	}
 }
 
-func (m IfaceSetMapaMteS[K, V]) GetKeys(value IfaceSetMapItem[V]) []K {
+func (m IfaceSetMapaMteS[K, V]) GetKeys(value IfaceSetMapItem[V]) []IfaceSetMapItem[K] {
 	return m.reverse.GetSet(value)
 }
 
 // GetUniqueValues only get the key's values that is not exists in other key's set
-func (m IfaceSetMapaMteS[K, V]) GetUniqueValues(key IfaceSetMapItem[K]) []V {
-	var r []V
+func (m IfaceSetMapaMteS[K, V]) GetUniqueValues(key IfaceSetMapItem[K]) []IfaceSetMapItem[V] {
+	var r []IfaceSetMapItem[V]
 	if set, ok := m.m[key.ID()]; ok {
 		for _, value := range set {
 			if len(m.reverse.GetSet(value)) <= 1 { // only have this value?
-				r = append(r, value.ID()) // that's what I find
+				r = append(r, value) // that's what I find
 			}
 		}
 	}
@@ -126,12 +126,12 @@ func (m IfaceSetMapaMteS[K, V]) GetUniqueValues(key IfaceSetMapItem[K]) []V {
 }
 
 // GetUniqueKeys only get the value's keys that is not other value's key
-func (m IfaceSetMapaMteS[K, V]) GetUniqueKeys(value IfaceSetMapItem[V]) []K {
-	var r []K
+func (m IfaceSetMapaMteS[K, V]) GetUniqueKeys(value IfaceSetMapItem[V]) []IfaceSetMapItem[K] {
+	var r []IfaceSetMapItem[K]
 	if set, ok := m.reverse.m[value.ID()]; ok {
 		for _, key := range set {
 			if len(m.GetSet(key)) <= 1 { // only have this key?
-				r = append(r, key.ID()) // that's what I find
+				r = append(r, key) // that's what I find
 			}
 		}
 	}

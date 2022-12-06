@@ -27,7 +27,7 @@ func (m HalfIfaceSetMap[K, V]) Exists(key K, value IfaceSetMapItem[V]) bool {
 }
 
 // GetSet get all the values from the set whose ID is key
-func (m HalfIfaceSetMap[K, V]) GetSet(key K) []V {
+func (m HalfIfaceSetMap[K, V]) GetSet(key K) []IfaceSetMapItem[V] {
 	return m.IfaceSetMap.GetSet(SimpleIfaceSetMapItem[K]{T: key})
 }
 
@@ -59,18 +59,23 @@ func (m HalfIfaceSetMapaMteS[K, V]) RemoveKey(key K) {
 	m.IfaceSetMapaMteS.RemoveKey(SimpleIfaceSetMapItem[K]{T: key})
 }
 
-func (m HalfIfaceSetMapaMteS[K, V]) GetKeys(value IfaceSetMapItem[V]) []K {
+func (m HalfIfaceSetMapaMteS[K, V]) GetKeys(value IfaceSetMapItem[V]) []IfaceSetMapItem[K] {
 	return m.IfaceSetMapaMteS.GetKeys(value)
 }
 
 // GetUniqueValues only get the key's values that is not exists in other key's set
-func (m HalfIfaceSetMapaMteS[K, V]) GetUniqueValues(key K) []V {
+func (m HalfIfaceSetMapaMteS[K, V]) GetUniqueValues(key K) []IfaceSetMapItem[V] {
 	return m.IfaceSetMapaMteS.GetUniqueValues(SimpleIfaceSetMapItem[K]{T: key})
 }
 
 // GetUniqueKeys only get the value's keys that is not other value's key
 func (m HalfIfaceSetMapaMteS[K, V]) GetUniqueKeys(value IfaceSetMapItem[V]) []K {
-	return m.IfaceSetMapaMteS.GetUniqueKeys(value)
+	keys := m.IfaceSetMapaMteS.GetUniqueKeys(value)
+	r := make([]K, len(keys))
+	for i, key := range m.IfaceSetMapaMteS.GetUniqueKeys(value) {
+		r[i] = key.(SimpleIfaceSetMapItem[K]).T
+	}
+	return r
 }
 
 // Exists show if a value is in the set whose ID is key
@@ -79,6 +84,6 @@ func (m HalfIfaceSetMapaMteS[K, V]) Exists(key K, value IfaceSetMapItem[V]) bool
 }
 
 // GetSet get all the values from the set whose ID is key
-func (m HalfIfaceSetMapaMteS[K, V]) GetSet(key K) []V {
+func (m HalfIfaceSetMapaMteS[K, V]) GetSet(key K) []IfaceSetMapItem[V] {
 	return m.IfaceSetMapaMteS.GetSet(SimpleIfaceSetMapItem[K]{T: key})
 }
