@@ -32,3 +32,32 @@ func TestIfaceSetMap(t *testing.T) {
 	t.Log(sm.Exists(SimpleIfaceSetMapItem[string]{"2"}, SimpleIfaceSetMapItem[int]{2}))
 	sm.Add(SimpleIfaceSetMapItem[string]{"2"}, SimpleIfaceSetMapItem[int]{3})
 }
+
+func TestIfaceSetMapaMteS(t *testing.T) {
+	sm := NewIfaceSetMapaMteS[string, int]()
+	sm.Add(SimpleIfaceSetMapItem[string]{"1"}, SimpleIfaceSetMapItem[int]{1})
+	sm.Add(SimpleIfaceSetMapItem[string]{"1"}, SimpleIfaceSetMapItem[int]{2})
+	sm.Add(SimpleIfaceSetMapItem[string]{"1"}, SimpleIfaceSetMapItem[int]{3})
+	sm.Add(SimpleIfaceSetMapItem[string]{"2"}, SimpleIfaceSetMapItem[int]{1})
+	sm.Add(SimpleIfaceSetMapItem[string]{"2"}, SimpleIfaceSetMapItem[int]{2})
+	sm.Add(SimpleIfaceSetMapItem[string]{"2"}, SimpleIfaceSetMapItem[int]{3})
+	t.Log(sm.GetUniqueKeys(SimpleIfaceSetMapItem[int]{2}))
+	t.Log(sm.GetUniqueValues(SimpleIfaceSetMapItem[string]{"2"}))
+	sm.Remove(SimpleIfaceSetMapItem[string]{"1"}, SimpleIfaceSetMapItem[int]{2})
+	t.Log(sm.GetUniqueValues(SimpleIfaceSetMapItem[string]{"2"}))
+	sm.Remove(SimpleIfaceSetMapItem[string]{"2"}, SimpleIfaceSetMapItem[int]{1})
+	sm.Add(SimpleIfaceSetMapItem[string]{"4"}, SimpleIfaceSetMapItem[int]{2})
+	sm.Add(SimpleIfaceSetMapItem[string]{"2"}, SimpleIfaceSetMapItem[int]{4})
+	t.Log(sm.GetUniqueKeys(SimpleIfaceSetMapItem[int]{2}))
+	t.Log(sm.GetUniqueValues(SimpleIfaceSetMapItem[string]{"2"}))
+
+	sm.Add(SimpleIfaceSetMapItem[string]{"1"}, SimpleIfaceSetMapItem[int]{1})
+	sm.Add(SimpleIfaceSetMapItem[string]{"1"}, SimpleIfaceSetMapItem[int]{2})
+	sm.Add(SimpleIfaceSetMapItem[string]{"1"}, SimpleIfaceSetMapItem[int]{3})
+	sm.Add(SimpleIfaceSetMapItem[string]{"2"}, SimpleIfaceSetMapItem[int]{1})
+	sm.Add(SimpleIfaceSetMapItem[string]{"2"}, SimpleIfaceSetMapItem[int]{2})
+	sm.Add(SimpleIfaceSetMapItem[string]{"2"}, SimpleIfaceSetMapItem[int]{3})
+	sm.RemoveKey(SimpleIfaceSetMapItem[string]{"2"})
+	sm.RemoveValue(SimpleIfaceSetMapItem[int]{2})
+	t.Log(sm.GetUniqueValues(SimpleIfaceSetMapItem[string]{"1"}))
+}

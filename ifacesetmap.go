@@ -65,3 +65,75 @@ func (m IfaceSetMap[K, V]) GetSet(key IfaceSetMapItem[K]) []V {
 	}
 	return r
 }
+
+// IfaceSetMapaMteS consists of a IfaceSetMap map<K, set<V>> and a reverse IfaceSetMap map<V, set<K>>
+// so it can show K和V之间的多对多关系
+type IfaceSetMapaMteS[K, V comparable] struct {
+	IfaceSetMap[K, V]
+	reverse IfaceSetMap[V, K]
+}
+
+func NewIfaceSetMapaMteS[K, V comparable]() IfaceSetMapaMteS[K, V] {
+	return IfaceSetMapaMteS[K, V]{
+		IfaceSetMap: NewIfaceSetMap[K, V](),
+		reverse:     NewIfaceSetMap[V, K](),
+	}
+}
+
+func (m IfaceSetMapaMteS[K, V]) Add(key IfaceSetMapItem[K], value IfaceSetMapItem[V]) {
+	m.IfaceSetMap.Add(key, value)
+	m.reverse.Add(value, key)
+}
+
+func (m IfaceSetMapaMteS[K, V]) Remove(key IfaceSetMapItem[K], value IfaceSetMapItem[V]) {
+	m.IfaceSetMap.Remove(key, value)
+	m.reverse.Remove(value, key)
+}
+
+func (m IfaceSetMapaMteS[K, V]) RemoveValue(value IfaceSetMapItem[V]) {
+	if set, ok := m.reverse.m[value.ID()]; ok {
+		for _, key := range set {
+			m.IfaceSetMap.Remove(key, value)
+		}
+		delete(m.reverse.m, value.ID())
+	}
+}
+
+func (m IfaceSetMapaMteS[K, V]) RemoveKey(key IfaceSetMapItem[K]) {
+	if set, ok := m.m[key.ID()]; ok {
+		for _, value := range set {
+			m.reverse.Remove(value, key)
+		}
+		delete(m.m, key.ID())
+	}
+}
+
+func (m IfaceSetMapaMteS[K, V]) GetKeys(value IfaceSetMapItem[V]) []K {
+	return m.reverse.GetSet(value)
+}
+
+// GetUniqueValues only get the key's values that is not exists in other key's set
+func (m IfaceSetMapaMteS[K, V]) GetUniqueValues(key IfaceSetMapItem[K]) []V {
+	var r []V
+	if set, ok := m.m[key.ID()]; ok {
+		for _, value := range set {
+			if len(m.reverse.GetSet(value)) <= 1 { // only have this value?
+				r = append(r, value.ID()) // that's what I find
+			}
+		}
+	}
+	return r
+}
+
+// GetUniqueKeys only get the value's keys that is not other value's key
+func (m IfaceSetMapaMteS[K, V]) GetUniqueKeys(value IfaceSetMapItem[V]) []K {
+	var r []K
+	if set, ok := m.reverse.m[value.ID()]; ok {
+		for _, key := range set {
+			if len(m.GetSet(key)) <= 1 { // only have this key?
+				r = append(r, key.ID()) // that's what I find
+			}
+		}
+	}
+	return r
+}
